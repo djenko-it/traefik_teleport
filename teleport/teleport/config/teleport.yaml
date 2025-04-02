@@ -1,0 +1,44 @@
+#
+# A Sample Teleport configuration file.
+#
+# Things to update:
+#  1. license.pem: Retrieve a license from your Teleport account https://teleport.sh
+#     if you are an Enterprise customer.
+#
+version: v3
+teleport:
+  nodename: teleport.djenkoit.fr
+  data_dir: /var/lib/teleport
+  log:
+    output: stderr
+    severity: INFO
+    format:
+      output: text
+  ca_pin: ""
+  diag_addr: ""
+auth_service:
+  enabled: "yes"
+  listen_addr: 0.0.0.0:3025
+  proxy_listener_mode: multiplex
+  cluster_name: teleport.djenkoit.fr
+ssh_service:
+  enabled: "no"
+proxy_service:
+  enabled: "yes"
+#  public_addr: teleport.djenkoit.fr:3080
+#  https_keypairs:
+#    - key_file: /etc/teleport/certs/cert.key
+#      cert_file: /etc/teleport/certs/cert.crt
+  web_listen_addr: 0.0.0.0:3080
+  public_addr: teleport.djenkoit.fr:443
+#  https_keypairs_reload_interval: 0s
+  https_keypairs: []
+  acme: {}
+app_service:
+  enabled: true
+#  debug_app: true
+  apps:
+  - name: "nas"
+    uri: "https://192.168.1.26:5001/"
+    insecure_skip_verify: true
+    public_addr: "nas.teleport.djenkoit.fr"
