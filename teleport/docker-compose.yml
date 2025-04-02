@@ -1,0 +1,18 @@
+version: "3"
+
+services:
+  teleport:
+    image: public.ecr.aws/gravitational/teleport-distroless:17.2.8
+    container_name: teleport
+    restart: unless-stopped
+    environment:
+      - SSL_CERT_FILE=/etc/ssl/certs/root_ca.crt
+    ports:
+      - "3023:3023"  # Proxy Service
+      - "3025:3025"  # Auth Service
+      - "3080:3080"  # Web UI
+    volumes:
+      - ./teleport/config:/etc/teleport
+      - ./teleport/data:/var/lib/teleport
+      - ./teleport-certs:/etc/teleport/certs
+      - ./teleport-certs/root_ca.crt:/etc/ssl/certs/root_ca.crt
