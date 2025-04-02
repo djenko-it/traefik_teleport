@@ -1,0 +1,45 @@
+# dynamic.yml
+http:
+  serversTransports:
+    teleport-transport:
+      insecureSkipVerify: true
+
+  services:
+    # Service pour phpIPAM sur l'autre VM
+    phpipam-service:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.1.127:8080"
+    # Service pour phpIPAM sur l'autre VM
+    teleport-service:
+      loadBalancer:
+        servers:
+          - url: "https://192.168.1.188:3080"
+        passHostHeader: true
+        serversTransport: teleport-transport
+
+  routers:
+    # Routeur pour app2.djenkoit.fr (phpIPAM)
+    phpipam-router:
+      rule: "Host(`app2.djenkoit.fr`)"
+      entryPoints:
+        - websecure
+      service: phpipam-service
+      tls:
+        certResolver: myresolver
+    teleport-router:
+      #rule: "Host(`teleport.djenkoit.fr`)"
+      rule: "Host(`teleport.djenkoit.fr`) || HostRegexp(`{subhost:[a-z]+}.teleport.djenkoit.fr`)"
+      entryPoints:
+        - websecure
+      service: teleport-service
+      tls:
+        certResolver: myresolver
+        domains:
+          - main: "teleport.djenkoit.fr"
+            sans: "nas.teleport.djenkoit.fr"
+
+tls:
+  options:
+    default:
+      minVersion: "VersionTLS12"
